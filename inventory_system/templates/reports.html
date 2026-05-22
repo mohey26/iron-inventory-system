@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}التقارير{% endblock %}
+{% block content %}
+<h2>📈 التقارير</h2>
+<div class="row mb-3">
+    <div class="col-5"><input id="startDate" type="date" class="form-control"></div>
+    <div class="col-5"><input id="endDate" type="date" class="form-control"></div>
+    <div class="col-2"><button id="loadReport" class="btn btn-primary">عرض</button></div>
+</div>
+<button id="exportCSV" class="btn btn-outline-success mb-3">تصدير CSV</button>
+<table class="table table-bordered">
+    <thead><tr><th>المنتج</th><th>الكود</th><th>وارد</th><th>صادر</th><th>المخزون</th></tr></thead>
+    <tbody id="reportBody"></tbody>
+</table>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('loadReport').addEventListener('click', async ()=>{
+    let start = document.getElementById('startDate').value;
+    let end = document.getElementById('endDate').value;
+    if(!start || !end) return alert('اختر النطاق');
+    let res = await fetch(`/api/report?start=${start}&end=${end}`);
+    let data = await res.json();
+    let tbody = document.getElementById('reportBody');
+    tbody.innerHTML = '';
+    data.forEach(r => {
+        tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.code}</td><td>${r.total_in}</td><td>${r.total_out}</td><td>${r.stock_now}</td></tr>`;
+    });
+    document.getElementById('exportCSV').onclick = ()=> window.location=`/export/csv?start=${start}&end=${end}`;
+});
+</script>
+{% endblock %}

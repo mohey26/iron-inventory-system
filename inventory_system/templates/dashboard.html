@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}لوحة التحكم{% endblock %}
+{% block content %}
+<h2>📊 ملخص المخزون</h2>
+<div class="row my-4">
+    <div class="col-6 col-md-3">
+        <div class="card bg-primary text-white text-center p-3">
+            <h5>المنتجات</h5>
+            <h3>{{ total_products }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card bg-success text-white text-center p-3">
+            <h5>إجمالي القطع</h5>
+            <h3>{{ total_qty }}</h3>
+        </div>
+    </div>
+</div>
+
+<h4>🔔 التنبيهات</h4>
+{% if alerts %}
+<ul class="list-group mb-4">
+    {% for a in alerts %}
+    <li class="list-group-item list-group-item-warning">
+        {{ a.name }} ({{ a.code }}): {{ a.message }} - {{ a.alert_date }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">لا توجد تنبيهات.</p>
+{% endif %}
+
+<h4>🔄 آخر الحركات</h4>
+<table class="table table-striped">
+    <thead><tr><th>التاريخ</th><th>المنتج</th><th>الكمية</th><th>النوع</th></tr></thead>
+    <tbody>
+    {% for m in movements %}
+    <tr>
+        <td>{{ m.date }}</td>
+        <td>{{ m.name }}</td>
+        <td>{{ m.quantity }}</td>
+        <td>{% if m.type == 'in' %}وارد{% else %}صادر{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

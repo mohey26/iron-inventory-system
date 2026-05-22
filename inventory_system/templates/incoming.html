@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}تسجيل وارد{% endblock %}
+{% block content %}
+<h2>📥 وارد جديد</h2>
+<form id="incomingForm" class="card p-4">
+    <select name="product_id" class="form-select mb-2" required>
+        <option value="">اختر المنتج</option>
+        {% for p in products %}
+        <option value="{{ p.id }}">{{ p.code }} - {{ p.name }}</option>
+        {% endfor %}
+    </select>
+    <input name="date" type="date" class="form-control mb-2" required>
+    <input name="supplier" placeholder="المورد" class="form-control mb-2">
+    <input name="quantity" type="number" placeholder="الكمية" class="form-control mb-2" required>
+    <input name="unit_price" type="number" step="0.01" placeholder="سعر الوحدة" class="form-control mb-2">
+    <textarea name="notes" placeholder="ملاحظات" class="form-control mb-2"></textarea>
+    <button type="submit" class="btn btn-success">تسجيل</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('incomingForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    let form = new FormData(e.target);
+    let data = Object.fromEntries(form.entries());
+    data.date = data.date || new Date().toISOString().slice(0,10);
+    let res = await fetch('/api/incoming', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+    });
+    let json = await res.json();
+    alert(json.message);
+    if(json.ok) location.href='/';
+});
+</script>
+{% endblock %}

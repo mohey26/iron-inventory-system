@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}المنتجات{% endblock %}
+{% block content %}
+<h2>📦 المنتجات</h2>
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">إضافة منتج</button>
+<table class="table table-bordered">
+    <thead><tr><th>الكود</th><th>الاسم</th><th>النوع</th><th>الموقع</th><th>المخزون</th></tr></thead>
+    <tbody>
+    {% for p in products %}
+    <tr>
+        <td>{{ p.code }}</td><td>{{ p.name }}</td><td>{{ p.type }}</td>
+        <td>{{ p.location }}</td><td>{{ p.quantity }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="modal fade" id="addProductModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="productForm" class="modal-content">
+      <div class="modal-header"><h5>منتج جديد</h5></div>
+      <div class="modal-body">
+        <input name="code" placeholder="الكود" class="form-control mb-2" required>
+        <input name="name" placeholder="الاسم" class="form-control mb-2" required>
+        <input name="type" placeholder="النوع" class="form-control mb-2">
+        <input name="location" placeholder="الموقع" class="form-control mb-2">
+        <input name="min_stock" type="number" value="10" class="form-control mb-2">
+        <input name="barcode" placeholder="باركود" class="form-control mb-2">
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('productForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    let data = Object.fromEntries(new FormData(e.target).entries());
+    data.min_stock = parseInt(data.min_stock);
+    let res = await fetch('/api/products', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+    });
+    let json = await res.json();
+    alert(json.message);
+    if(json.ok) location.reload();
+});
+</script>
+{% endblock %}
